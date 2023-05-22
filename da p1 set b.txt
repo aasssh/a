@@ -1,0 +1,184 @@
+1. Build a simple linear regression model for Fish Species Weight Prediction. (download dataset
+https://www.kaggle.com/aungpyaeap/fish-market?select=Fish.csv )
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+
+
+df = pd.read_csv(r"F:\T.Y.B.SC(CS)-SEM 6\Prac DA\Fish.csv")
+print('Shape of dataset= ', df.shape) # To get no of rows and columns
+print(df.head(5))
+#head(n) returns first n records only.
+df.rename(columns={'Length1':'VerticalLen','Length2':'DiagonalLen','Length3':'CrossLen'},inplace = True)
+# 'inplace= true' to make change in current dataframe
+print(df.sample(5)) # Display random 5 records
+
+print(df.Species.value_counts())
+
+df_sp = df.Species.value_counts()
+df_sp = pd.DataFrame(df_sp)
+print(df_sp.T) 
+# Note: Just like matrices. 'dataframe.T' will Transpose index and columns
+
+X = df[['Height','Width']] # Select columns using column name
+X.head()
+
+y = df[['Weight']]
+y.head(5)
+
+#We will split the dataset, so that we can use one set of data for training the model
+#and one set of data for testing the model
+#We will keep 20% of data for testing and 80% of data for training the model
+
+X_train,X_test, y_train, y_test = train_test_split(X, y, test_size =0.2, random_state = 42) 
+# Use paramter 'random_state=1' if you want keep results same everytime you execute above code
+print('X_train dimension= ', X_train.shape)
+print('X_test dimension= ', X_test.shape)
+print('y_train dimension= ', y_train.shape)
+print('y_train dimension= ', y_test.shape)
+
+
+model = linear_model.LinearRegression()
+print(model.fit(X_train,y_train))
+
+#Understanding Training Results
+#As per our hypothesis function, 'model' object contains the coef(slope of line) and intercept values
+
+print('coef= ', model.coef_) # Since we have two features(Height and Width), there will be 2 coef
+print('intercept= ', model.intercept_)
+print('score= ', model.score(X_test,y_test))
+
+#Predicting The Test Data
+#Check below table for weight from test data and predicted weight by our model
+#We will also plot the scatter plot of weight from test data vs predicted weight
+
+
+predictedWeight = pd.DataFrame(model.predict(X_test), columns=['Predicted Weight']) # Create new dataframe of column'Predicted Weight'
+actualWeight = pd.DataFrame(y_test)
+actualWeight = actualWeight.reset_index(drop=True) # Drop the index so that we can concat it, to create new dataframe
+df_actual_vs_predicted = pd.concat([actualWeight,predictedWeight],axis =1)
+print(df_actual_vs_predicted.T)
+
+plt.scatter(X_test['Height'], y_test, color='red', label = 'Actual Weight')
+plt.scatter(X_test['Height'], model.predict(X_test), color='green', label = 'Prdicted Weight')
+plt.xlabel('Height')
+plt.ylabel('Weight')
+plt.rcParams["figure.figsize"] = (10,6) # Custom figure size in inches
+plt.title('Actual Vs Predicted Weight for Test Data')
+plt.legend()
+plt.show()
+
+
+
+2. Use the iris dataset. Write a Python program to view some basic statistical details like percentile,
+mean, std etc. of the species of 'Iris-setosa', 'Iris-versicolor' and 'Iris-virginica'. Apply logistic
+regression on the dataset to identify different species (setosa, versicolor, verginica) of Iris
+flowers given just 4 features: sepal and petal lengths and widths.. Find the accuracy of the
+model.
+
+
+import pandas as pd
+# used to read the data set
+import numpy as np
+# used to do some operations with the arrays
+import os
+# used handle some files
+import matplotlib.pyplot as plt
+# used to visualize the data using graphs
+import seaborn as sns
+# plotting the chart in a single line
+
+df = pd.read_csv("F:\T.Y.B.SC(CS)-SEM 6\Prac DA\Iris.csv")
+
+#display the first five rows of the data set.
+
+print(df.head(5))
+
+
+#We have four features, SepalLength, SepalWidth, PetalLength, and PetalWidth.
+#The last feature, 'Species,' is the target feature I will predict.
+#Feature 'Id' is a definite feature that does not affect the target feature.
+#So let's drop that feature.
+
+df = df.drop(columns = ['Id'])
+print(df.head(5))
+
+
+#the information about the data type of the data set.
+
+df.info()
+
+#check the number of samples of each class in Species.
+
+print(df['Species'].value_counts())
+
+
+#To check whether the data set contains the null values
+
+print(df.isnull().sum())
+
+#visualize the data in the form of graphs. First, let's display some basic charts.
+#For each column,to show the histogram.
+
+ 
+
+plt.hist(df['SepalLengthCm'])
+#plt.show()
+plt.hist(df['SepalWidthCm'])
+#plt.show()
+
+plt.hist(df['PetalLengthCm'])
+#plt.show()
+plt.hist(df['PetalWidthCm'])
+#plt.show()
+
+#construct the matrix from the input attributes.
+print(df.corr())
+
+#The output class is in the categorical form in this data set,
+#and we need to convert it into the numeric format. So I will use Label Encoder.
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['Species'] = le.fit_transform(df['Species'])
+print(df.head(100))
+
+#After preprocessing all the data sets, we need to train and test our model.
+#So, let's import the model.
+
+ 
+from sklearn.model_selection import train_test_split
+
+
+#We need to separate the classes for input and output attributes.
+#drop the columns ‘Species’ and store the remaining input attributes to the variable X.
+#The output attribute i.e., ‘Species’ is taken in the variable Y.
+
+ 
+
+X = df.drop(columns = ['Species'])
+Y = df['Species']
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.25)
+
+
+#import a basic classification model called logistic Regression from SKlearn.
+
+ 
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+
+#to train the model. 
+
+model.fit(X_train, Y_train)
+
+#printing the metric to get the performance.
+
+print("Accuracy: ", model.score(X_test, Y_test) * 100)
+
+

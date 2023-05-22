@@ -1,0 +1,143 @@
+1. Consider any text paragraph. Preprocess the text to remove any special characters and digits. Generate
+the summary using extractive summarization process.
+
+
+
+Installing NLTK through Anaconda
+1. Open Anaconda Prompt
+2. Enter command -> conda install -c anaconda nltk
+3. Review the package upgrade, downgrade, install information and enter yes.
+4. NLTK is downloaded and installed.
+
+Set A – 1
+Import nltk
+import re
+text="""Hello all, Welcome to Python * Programming Academy 3. Python Programming 3
+Academy is a nice platform to learn new programming skills. It is difficult to get enrolled in
+this Academy."""
+text = re.sub(r'[[0-9]{}*]', ' ', text)
+text
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize, sent_tokenize
+stopWords = set(stopwords.words("english"))
+words = word_tokenize(text)
+wordfreq = {}
+for word in words:
+if word in stopWords:
+if word in wordfreq:
+wordfreq[word] += 1
+else:
+wordfreq[word] = 1
+maximum_frequency = max(wordfreq.values())
+for word in wordfreq.keys():
+wordfreq[word] = (wordfreq[word]/maximum_frequency)
+wordfreq
+
+o\p - {'all': 0.3333333333333333,
+'to': 1.0,
+'is': 0.6666666666666666,
+'a': 0.3333333333333333,
+'in': 0.3333333333333333,
+'this': 0.3333333333333333}
+
+sentences = sent_tokenize(text)
+sentenceValue = {}
+for sentence in sentences:
+for word, freq in wordfreq.items():
+if word in sentence.lower():
+if sentence in sentenceValue:
+sentenceValue[sentence] += freq
+else:
+sentenceValue[sentence] = freq
+sentenceValue
+
+o\p - {'Hello all, Welcome to Python Programming Academy.':
+1.9999999999999998,
+'Python Programming Academy is a nice platform to learn new
+programming skills.': 2.333333333333333,
+'It is \ndifficult to get enrolled in this Academy.':
+2.6666666666666665}
+
+Import heapq
+summary = ''
+summary_sentences = heapq.nlargest(4, sentenceValue, key=sentenceValue.get)
+summary = ' '.join(summary_sentences)
+print(summary)
+o\p -
+It is
+difficult to get enrolled in this Academy. Python Programming
+Academy is a nice platform to learn new programming skills. Hello
+all, Welcome to Python Programming Academy.
+
+
+
+
+2. Consider any text paragraph. Remove the stopwords. Tokenize the paragraph to extract words and
+sentences. Calculate the word frequency distribution and plot the frequencies. Plot the wordcloud of
+the text.
+
+
+Set A - 2
+import nltk
+nltk.download('all')
+text="""Hello all, Welcome to Python Programming Academy. Python
+Programming Academy is a nice platform to learn new programming
+skills. It is difficult to get enrolled in this Academy."""
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+tokenized_words=word_tokenize(text)
+tokenized_words
+stop_words_data=set(stopwords.words("english"))
+stop_words_data
+filtered_words_list=[]
+for words in tokenized_words:
+if words not in stop_words_data:
+filtered_words_list.append(words)
+print("Tokenized Words : \n",tokenized_words,"\n")
+print("Filtered Words : \n",filtered_words_list,"\n")
+from nltk.probability import FreqDist
+frequency_distribution=FreqDist(tokenized_words)
+print(frequency_distribution)
+print(frequency_distribution.most_common(2))
+import matplotlib.pyplot as plt
+frequency_distribution.plot(32,cumulative=False)
+
+
+
+
+3. Consider the following review messages. Perform sentiment analysis on the messages.
+i. I purchased headphones online. I am very happy with the product.
+ii. I saw the movie yesterday. The animation was really good but the script was ok.
+iii. I enjoy listening to music
+iv. I take a walk in the park everyday
+
+
+
+
+Set A - 3
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+vader_analyzer=SentimentIntensityAnalyzer()
+text1="I purchased headphones online. I am very happy with the
+product"
+print(vader_analyzer.polarity_scores(text1))
+o/p - {'neg': 0.0, 'neu': 0.667, 'pos': 0.333,
+'compound': 0.6115}
+text2="I saw the movie yesterday. The animation was really good but
+the script was ok."
+print(vader_analyzer.polarity_scores(text2))
+
+
+Removing stopwords only:
+
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+paragraph_text="""*****para*****"""
+tokenized_words=word_tokenize(paragraph_text)
+stop_words_data=set (stopwords.words("english"))
+filtered_words_list=[]
+for words in tokenized_words:
+  if words not in stop_words_data:
+     filtered_words_list.append(words)
+print("Tokenized words: \n",tokenized_words,"\n")
+print("Filtered words: \n",filtered_words_list,"\n")
